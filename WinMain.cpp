@@ -1,11 +1,42 @@
 #include <Windows.h>
+#include <string>
+#include <iostream>     // std::cout, std::ios
+#include <sstream>      // std::ostringstream
 
+/*
+	Callback on the messages received by the window
+*/
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
 	switch (msg)
 	{
 		case WM_CLOSE:
 			PostQuitMessage(420);
+			break;
+		case WM_KEYDOWN:
+			if (wParam == 'F') {
+				SetWindowTextA(hWnd, "Respect");
+			}
+			break;
+		case WM_KEYUP:
+			if (wParam == 'F') {
+				SetWindowTextA(hWnd, "Danger");
+			}
+			break;
+		case WM_CHAR:
+			{
+				static std::string title;
+				title.push_back((char)wParam);
+				SetWindowTextA(hWnd, title.c_str());
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			{
+				POINTS pt = MAKEPOINTS(lParam);
+				std::ostringstream oss;
+				oss << "(" << pt.x << "," << pt.y << ")";
+				SetWindowTextA(hWnd, oss.str().c_str());
+			}
 			break;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
