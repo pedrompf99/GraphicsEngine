@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>     // std::cout, std::ios
 #include <sstream>      // std::ostringstream
+#include "Exception.h"
 
 /*
 	Callback on the messages received by the window
@@ -13,15 +14,27 @@ int CALLBACK WinMain(
 	LPSTR		lpCmdLine,
 	int			nCmdShow)
 {
-	Window wnd(800, 300, L"Test Window");
-	
-	MSG msg;
-	BOOL gResult;
-	while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+	try {
+		Window wnd(800, 300, "Test Window");
+
+		MSG msg;
+		BOOL gResult;
+		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		if (gResult == -1)
+			return -1;
+		return msg.wParam;
 	}
-	if (gResult == -1)
-		return -1;
-	return msg.wParam;
+	catch (const Exception& e) {
+		MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
+	} 
+	catch (const std::exception& e) {
+		MessageBox(nullptr, e.what(), "Standard Exception", MB_OK | MB_ICONEXCLAMATION);
+	}
+	catch (...) {
+		MessageBox(nullptr, "No details available", "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+	}
+	
 }

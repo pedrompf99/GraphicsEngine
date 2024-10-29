@@ -1,24 +1,38 @@
 #pragma once
 #include "WindowsInclude.h"
+#include "Exception.h"
 
 class Window
 {
+public:
+	class CustomException : public Exception {
+	public:
+		CustomException(int line, const char* file, HRESULT hr) noexcept;
+		const char* what() const noexcept override;
+		virtual const char* GetType() const noexcept override;
+		static std::string TranslateErrorCode(HRESULT hr) noexcept;
+		HRESULT GetErrorCode() const noexcept;
+		std::string GetErrorString() const noexcept;
+	private:
+		HRESULT hr;
+	};
 private:
+	//singleton manages registration/cleanup of windows
 	class WindowClass
 	{
 	public:
-		static const LPCWSTR GetName() noexcept;
+		static const char* GetName() noexcept;
 		static HINSTANCE GetInstance() noexcept;
 	private:
 		WindowClass() noexcept;
 		~WindowClass();
 		WindowClass(const WindowClass&) = delete;
-		static constexpr const LPCWSTR wndClassName = L"Direct3D Engine Window";
+		static constexpr const char* wndClassName = "Direct3D Engine Window";
 		static WindowClass wndClass;
 		HINSTANCE hInst;
 	};
 public:
-	Window(int width, int height, const LPCWSTR name) noexcept;
+	Window(int width, int height, const char* name);
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
@@ -31,3 +45,7 @@ private:
 	int height;
 	HWND hWnd;
 };
+
+//error exception helper macro
+#define WND_EXCEPT(hr) Window::CustomException(__LINE__, __FILE__, hr);
+#define WND_LAST_EXCEPT() Window::CustomException(__LINE__, __FILE__, GetLastError());
