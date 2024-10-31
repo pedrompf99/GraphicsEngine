@@ -94,6 +94,27 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
+		// clear keystate when window loses focus to prevent input getting stuck
+	case WM_KILLFOCUS:
+		kbd.ClearState();
+		break;
+		// KEYBOARD MESSAGES
+	case WM_KEYDOWN:
+		// syskey commands need to be handled to track ALT keys and F10
+	case WM_SYSKEYDOWN:
+		// the 30th bit in lParam indicated if it's a repeated key
+		if(!(lParam && 0x40000000) || kbd.AutorepeatIsEnabled())
+			kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+		break;
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		break;
+	case WM_CHAR:
+		kbd.OnChar(static_cast<unsigned char>(wParam));
+		break;
+		// END KEYBOARD MESSAGES
+
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
