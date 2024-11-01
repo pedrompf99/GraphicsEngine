@@ -64,6 +64,9 @@ Window::Window(int width, int height, const char* name)
 	}
 
 	ShowWindow(hWnd, SW_SHOWDEFAULT);
+
+	//create graphics objects
+	pGfx = std::make_unique<Graphics>(hWnd);
 }
 
 Window::~Window() {
@@ -86,6 +89,14 @@ std::optional<int> Window::ProcessMessages() {
 		DispatchMessage(&msg);
 	}
 	return {};
+}
+
+Graphics& Window::Gfx()
+{
+	if (!pGfx) {
+		throw WND_NOGFX_EXCEPT();
+	}
+	return *pGfx;
 }
 
 //This only exists to build the connection between the window and this class
@@ -200,23 +211,27 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 }
 
 // Window exception stuff
-Window::CustomException::CustomException(int line, const char* file, HRESULT hr) noexcept : Exception(line, file), hr(hr) {};
+Window::HrException::HrException(int line, const char* file, HRESULT hr) noexcept : Exception(line, file), hr(hr) {};
 
-const char* Window::CustomException::what() const noexcept {
+const char* Window::HrException::what() const noexcept {
 	std::ostringstream oss;
 	oss << GetType() << std::endl
 		<< "[Error Code] " << GetErrorCode() << std::endl
-		<< "[Description] " << GetErrorString() << std::endl
+		<< "[Description] " << GetErrorDescription() << std::endl
 		<< GetOriginString();
 	whatBuffer = oss.str();
 	return whatBuffer.c_str();
 }
 
-const char* Window::CustomException::GetType() const noexcept {
+const char* Window::HrException::GetType() const noexcept {
 	return "Window Custom Exception";
 }
 
-std::string Window::CustomException::TranslateErrorCode(HRESULT hr) noexcept {
+const char* Window::NoGfxException::GetType() const noexcept {
+	return "Graphic Custom Exception";
+}
+
+std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept {
 	char* pMsgBuf = nullptr;
 	DWORD nMsgLen = FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -232,10 +247,10 @@ std::string Window::CustomException::TranslateErrorCode(HRESULT hr) noexcept {
 	return errorString;
 }
 
-HRESULT Window::CustomException::GetErrorCode() const noexcept {
+HRESULT Window::HrException::GetErrorCode() const noexcept {
 	return hr;
 }
 
-std::string Window::CustomException::GetErrorString() const noexcept {
+std::string Window::HrException::GetErrorDescription() const noexcept {
 	return TranslateErrorCode(hr);
 }

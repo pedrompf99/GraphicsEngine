@@ -2,9 +2,9 @@
 #include <exception>
 #include <string>
 
-class Exception : public std::exception{
+class SpecialException : public std::exception{
 public:
-	Exception(int line, const char* file) noexcept;
+	SpecialException(int line, const char* file) noexcept;
 	const char* what() const noexcept override;
 	virtual const char* GetType() const noexcept;
 	int GetLine() const noexcept;

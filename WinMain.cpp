@@ -17,7 +17,7 @@ int CALLBACK WinMain(
 	try {
 		return App{}.Go();
 	}
-	catch (const Exception& e) {
+	catch (const SpecialException& e) {
 		MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
 	} 
 	catch (const std::exception& e) {

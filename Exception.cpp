@@ -1,9 +1,9 @@
 #include "Exception.h"
 #include <sstream>
 
-Exception::Exception(int line, const char* file) noexcept : line(line), file(file){}
+SpecialException::SpecialException(int line, const char* file) noexcept : line(line), file(file){}
 
-const char* Exception::what() const noexcept {
+const char* SpecialException::what() const noexcept {
 	std::ostringstream oss;
 	oss << GetType() << std::endl
 		<< GetOriginString();
@@ -12,19 +12,19 @@ const char* Exception::what() const noexcept {
 	return whatBuffer.c_str();
 }
 
-const char* Exception::GetType() const noexcept {
+const char* SpecialException::GetType() const noexcept {
 	return "Custom Exception";
 }
 
-int Exception::GetLine() const noexcept {
+int SpecialException::GetLine() const noexcept {
 	return line;
 }
 
-const std::string& Exception::GetFile() const noexcept {
+const std::string& SpecialException::GetFile() const noexcept {
 	return file;
 }
 
-std::string Exception::GetOriginString() const noexcept {
+std::string SpecialException::GetOriginString() const noexcept {
 	std::ostringstream oss;
 	oss << "[File] " << file << std::endl
 		<< "[Line] " << line;
