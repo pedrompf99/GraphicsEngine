@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "App.h"
 #include <string>
 #include <iostream>     // std::cout, std::ios
 #include <sstream>      // std::ostringstream
@@ -15,20 +15,7 @@ int CALLBACK WinMain(
 	int			nCmdShow)
 {
 	try {
-		Window wnd(800, 300, "Test Window");
-
-		MSG msg;
-		BOOL gResult;
-		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-			if (wnd.kbd.KeyIsPressed(VK_MENU)) {
-				MessageBox(nullptr, "Something happened!", "alt key was pressed", MB_OK | MB_ICONEXCLAMATION);
-			}
-		}
-		if (gResult == -1)
-			return -1;
-		return msg.wParam;
+		return App{}.Go();
 	}
 	catch (const Exception& e) {
 		MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
