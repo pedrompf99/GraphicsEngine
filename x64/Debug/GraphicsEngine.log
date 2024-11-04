@@ -1,2 +1,4 @@
 ﻿  Graphics.cpp
+D:\Personal\GraphicsEngine\Graphics.cpp(164,2): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Personal\GraphicsEngine\Graphics.cpp(186,2): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
   GraphicsEngine.vcxproj -> D:\Personal\GraphicsEngine\x64\Debug\GraphicsEngine.exe
